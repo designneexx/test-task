@@ -1,26 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useReducer, useEffect } from 'react';
+import SinglePage from './components/SinglePage';
+import { Word } from './api/interfaces';
+import { FavoritesContext } from './store';
+import { favoriteReducer } from './store/reducers';
 
-function App() {
+const App = () => {
+  const storageFavorites = localStorage.getItem('FAVORITES');
+  const initialFavorites: Word[] = (storageFavorites && JSON.parse(storageFavorites)) || [];
+  const [favorites, dispatch] = useReducer(favoriteReducer, initialFavorites);
+
+  useEffect(() => {
+    localStorage.setItem('FAVORITES', JSON.stringify(favorites));
+  }, [favorites]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <FavoritesContext.Provider value={[favorites, dispatch]}>
+      <SinglePage />
+    </FavoritesContext.Provider>
   );
-}
+};
 
 export default App;
